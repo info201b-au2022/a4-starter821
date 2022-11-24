@@ -1,5 +1,6 @@
 library(tidyverse)
 library(dplyr)
+library(usmap)
 library(ggplot2)
 library(scales)
 
@@ -36,59 +37,35 @@ test_query2 <- function(num=6) {
 jail_pop_in_2018 <- incarceration_trends %>% 
   filter(year == max(year))
 
-highest_total_pop <- jail_pop_in_2018 %>%
-  arrange(desc(total_pop)) %>% 
-  head(1)
-
-highest_total_pop_state <- highest_total_pop %>% 
-  pull(state)
-
-highest_total_pop_num <- highest_total_pop %>% 
-  pull(total_pop)
-
-highest_total_pop_black <- highest_total_pop %>% 
-  pull(black_pop_15to64)
-
-highest_total_pop_aapi <- highest_total_pop %>% 
-  pull(aapi_pop_15to64) 
-
-highest_total_pop_latinx <- highest_total_pop %>% 
-  pull(latinx_pop_15to64) 
-
-highest_total_pop_white <- highest_total_pop %>% 
-  pull(white_pop_15to64)
-
-highest_total_pop_native <- highest_total_pop %>% 
-  pull(native_pop_15to64)
-
-black_rate <- paste0(round(highest_total_pop_num / highest_total_pop_black, 2), "%")
-
-
-#of the population, how percentage. 
-#total_num of population, total num of black population
-#tot
-
-total_pop_in_2018 <- jail_pop_in_2018 %>% 
-  summarize(total_population = sum(total_pop_15to64)) %>% 
+total_jail_pop_in_2018 <- jail_pop_in_2018 %>% 
+  summarize(total_jail_population = sum(total_jail_pop, na.rm = TRUE)) %>% 
   pull()
 
-black_pop_in_2018 <- jail_pop_in_2018 %>% 
-  summarize(black_population = sum(black_pop_15to64)) %>% 
+black_jail_pop_in_2018 <- jail_pop_in_2018 %>% 
+  summarize(black_jail_pop = sum(black_jail_pop, na.rm = TRUE)) %>% 
   pull()
 
-black_pop_rate_2018 <- round(black_pop_in_2018/ total_pop_in_2018, 2) * 100
+black_jail_pop_rate_2018 <- round(black_jail_pop_in_2018/ total_jail_pop_in_2018, 2) * 100
 
-aapi_pop_2018 <- jail_pop_in_2018 %>% 
-  summarize(aapi_population = sum(aapi_pop_15to64)) %>% 
+aapi_jail_pop_2018 <- jail_pop_in_2018 %>% 
+  summarize(aapi_jail_pop = sum(aapi_jail_pop, na.rm = TRUE)) %>% 
   pull() 
 
-aapi_pop_rate_2018 <- round(aapi_pop_2018/ total_pop_in_2018, 2) * 100
+aapi_jail_pop_rate_2018 <- round(aapi_jail_pop_2018/ total_jail_pop_in_2018, 2) * 100
 
-summary_info <- list(total_pop_in_2018,
-                     black_pop_in_2018,
-                     black_pop_rate_2018,
-                     aapi_pop_2018,
-                     aapi_pop_rate_2018
+latinx_jail_pop_2018 <- jail_pop_in_2018 %>% 
+  summarize(latinx_jail_pop = sum(latinx_jail_pop, na.rm = TRUE)) %>% 
+  pull() 
+
+latinx_jail_pop_rate_2018 <- round(latinx_jail_pop_2018/ total_jail_pop_in_2018, 2) * 100
+
+summary_info <- list(total_jail_pop_in_2018,
+                     black_jail_pop_in_2018,
+                     black_jail_pop_rate_2018,
+                     aapi_jail_pop_2018,
+                     aapi_jail_pop_rate_2018,
+                     latinx_jail_pop_2018,
+                     latinx_jail_pop_rate_2018
                      )
 
 
@@ -119,8 +96,8 @@ plot_jail_pop_for_us <- function()  {
     labs(title = "Increase of Jail Population in U.S. (1970-2018)" ,
          y = "Total Jail Population",
          caption= "Figure 1. Increase of Jail Population in U.S. (1970-2018). \nThe chart shows the growth in jail population in the United States between 1970 and 2018.") +
-    theme(plot.caption = element_text(hjust = 0),
-          plot.title = element_text(hjust = 0.5))
+    theme(plot.caption = element_text(hjust = 0.5),
+          plot.title = element_text(hjust = 0))
   return(bar_chart)   
 } 
 
@@ -151,11 +128,11 @@ plot_jail_pop_by_states <- function(states) {
                       aes(x = year, y = jail_pop, group = state)) +
     geom_line(aes(color = state)) +
     scale_y_continuous(label = comma) +
-    labs(title = "Increase of Jail Population in Washington, California, Oregon, and Texas\n(1970-2018)" ,
+    labs(title = "Increase of Jail Population in Washington, California, Oregon, and Texas \n(1970-2018)" ,
          y = "Total Jail Population",
          caption= "Figure 2. Increase of Jail Population in Washington, California, Oregon, and Texas. (1970-2018). \nThe chart shows the growth in jail population in the Washington, California, Oregon, and Texas between 1970 and 2018.") +
-    theme(plot.caption = element_text(hjust = 0),
-          plot.title = element_text(hjust = 0.5))
+    theme(plot.caption = element_text(hjust = 0.5),
+          plot.title = element_text(hjust = 0))
   return (line_plot)
 }
 
@@ -164,7 +141,8 @@ plot_jail_pop_by_states <- function(states) {
 # <Black Population Rate in Prison in Rural and Urban Areas (1970-2018)>
 #----------------------------------------------------------------------------#
 
-# this function 
+# This function returns the black prison population rate rural and urban
+# areas each year from 1970 to 2018
 get_prison_pop_by_urbanicity<- function() {
   prison_pop_by_urbanicity <- incarceration_trends %>% 
     filter(urbanicity == "rural" | urbanicity == "urban") %>% 
@@ -176,7 +154,8 @@ get_prison_pop_by_urbanicity<- function() {
 }
 
 
-
+# This function plots a line plot of the difference of the trend of 
+# black prison population rate between rural and urban areas from 1970 to 2018
 plot_prison_pop_by_urbanicity <- function() {
   line_plot <- ggplot(data = get_prison_pop_by_urbanicity(),
                       aes(x = year, y = black_prison_rate, group = urbanicity)) +
@@ -184,25 +163,81 @@ plot_prison_pop_by_urbanicity <- function() {
     scale_y_continuous(label = comma) +
     labs(title = "Black Population Rate in Prison in Rural and Urban Areas (1970-2018)",
          y = "Rate of black population in prison",
-         caption= "Figure 2. Black Population Rate in Prison in Rural and Urban Areas (1970-2018). \nThe chart shows the difference in black population in prison between rural and urban areas") +
-    theme(plot.caption = element_text(hjust = 0))
+         caption= "Figure 3. Black Population Rate in Prison in Rural and Urban Areas (1970-2018). \nThe chart shows the difference in black population in prison between rural and urban areas") +
+    theme(plot.caption = element_text(hjust = 0.5))
   return (line_plot)
 }
 
 
 
 
-
-
-
-
 ## Section 6  ---- 
 #----------------------------------------------------------------------------#
-# <a map shows potential patterns of inequality that vary geographically>
-# Your functions might go here ... <todo:  update comment>
-# See Canvas
+# <Jail Population Trend Map between female and male >
 #----------------------------------------------------------------------------#
+get_female_percent_jail_2018 <- function() {
+  female_percent <- incarceration_trends %>% 
+    group_by(state) %>% 
+    filter(year == max(year)) %>% 
+    select(state, female_jail_pop, total_jail_pop) %>% 
+    group_by(state) %>% 
+    mutate(female_jail_rate = round(female_jail_pop / total_jail_pop * 100, 2)) %>% 
+    summarize(female_jail_rate = mean(female_jail_rate, na.rm = TRUE)) 
+  female_percent$female_jail_rate[is.nan(female_percent$female_jail_rate)] <- 0
+  
+  return (female_percent)
+}
 
-## Load data frame ---- 
+
+get_male_percent_jail_2018 <- function() {
+  male_percent <- incarceration_trends %>% 
+    group_by(state) %>% 
+    filter(year == max(year)) %>% 
+    select(state, male_jail_pop, total_jail_pop) %>% 
+    group_by(state) %>% 
+    mutate(male_jail_rate = round(male_jail_pop / total_jail_pop * 100, 2)) %>% 
+    summarize(male_jail_rate = mean(male_jail_rate, na.rm = TRUE)) 
+  male_percent$male_jail_rate[is.nan(male_percent$male_jail_rate)] <- 0
+  return (male_percent)
+}
+
+
+
+plot_female_map <- function() {
+  female_map <- plot_usmap(data = get_female_percent_jail_2018(),
+                              values = "female_jail_rate",
+                              color = "#deebf7") +
+  scale_fill_continuous(low = "white",
+                        high = "#3182bd", 
+                        name = "Jail Population Rate (%)",
+                        label = scales::comma) +
+  theme(legend.position = "right") +
+  labs(title = "U.S. Female Jail Average Population Rate in 2018",
+       caption = "Figure 5. U.S. Female Jail Average Population Rate in 2018. \nThe chart shows the geographical difference in female jail average population rate.") +
+    theme(plot.title = element_text(hjust = 0), plot.caption = element_text(hjust = 0.5))
+  return (female_map)
+}
+
+
+
+plot_male_map <- function() {
+  male_map <- plot_usmap(data = get_male_percent_jail_2018(),
+                              values = "male_jail_rate",
+                              color = "#deebf7") +
+    scale_fill_continuous(low = "white",
+                        high = "#3182bd", 
+                        name = "Jail Population Rate (%)",
+                        label = scales::comma) +
+    theme(legend.position = "right") +
+    labs(title = "U.S. Male Jail Average Population Rate in 2018",
+         caption = "Figure 6. U.S. Male Jail Average Population Rate in 2018. \nThe chart shows the geographical difference in male jail average population rate.") +
+    theme(plot.title = element_text(hjust = 0), plot.caption = element_text(hjust = 0.5))
+    
+  return (male_map)
+}
+
+
+
+
 
 
