@@ -1,6 +1,6 @@
 
 ---
-title: "A4 Report"
+title: "Exposin Patterns of Inequlaity in Incarceration"
 author: "Sunghee Park"
 date: '2022-11-21'
 output: html_document
@@ -12,7 +12,8 @@ source("../source/analysis.R")
 ```
 
 ## Abstract 
-[TODO: Include a short abstract (about 50 words)]
+In this report, we will discuss the difference in many variables using the incarceration trend data collected by the Vera Institue. We will discuss growth of the U.S. Prison Population, growth of prison population by state, Difference in Black Prison Population Rate Between Rural and Urban Areas, and Difference in U.S. Jail Average Population Rate in 2018 Between Female and Male using different types of charts and graphs
+
 
 
 ## Introduction 
@@ -22,30 +23,27 @@ In this report, I will be answering:
 
 * What was the trend in jail population between 1970 and 2018?
 * What was the difference in trend of jail population in the four different states in 1970-2018?
-* How do rural and urban areas differ in rate of black prison population. 
+* How do rural and urban areas differ in rate of black prison population?
+* How do average jail population rate differ between the two genders, male and female?
 
 
 
 ## Data Summary 
 ```{r echo = FALSE, message = FALSE}
-
-total_pop_num <- prettyNum(summary_info[1], big.mark = ",")
-total_pop_black <- prettyNum(summary_info[2], big.mark = ",")
-black_rate <- summary_info[3]
-total_pop_aapi <- prettyNum(summary_info[4], big.mark = ",")
-aapi_rate <- summary_info[5]
+total_jail_pop_in_2018 <- prettyNum(summary_info[1], big.mark = ",")
+black_jail_pop_in_2018 <- prettyNum(summary_info[2], big.mark = ",")
+black_jail_pop_rate_2018 <- summary_info[3]
+aapi_jail_pop_2018 <- prettyNum(summary_info[4], big.mark = ",")
+aapi_jail_pop_rate_2018 <- summary_info[5]
 
 ```
 
-In 2018, which is the most current year in the data set, had the highest population of incarceration with `r total_pop_num` people. Out of the population, `r total_pop_black` people were Black, ages between 15 and 64, which was `r black_rate` of the population. `r total_pop_aapi` people were Asian American / Pacific Islander, ages between 15 and 64, which was `r aapi_rate` of the population. 
-
-most black = their urban?
-least black = thier urban?
+In 2018, which is the most current year in the data set, there were `r total_jail_pop_in_2018` people in jail. Out of the population, `r black_jail_pop_in_2018` people were Black, which was `r black_jail_pop_rate_2018`% of the population. `r aapi_jail_pop_2018` people were Asian American / Pacific Islander, which was `r aapi_jail_pop_rate_2018`% of the population. 
 
 ## Growth of the U.S. Jail Population
 ```{r echo = FALSE, message = FALSE}
-jail_pop_bar <- plot_jail_pop_for_us()
-jail_pop_bar
+plot_jail_pop_for_us()
+
 ```
 \
 \
@@ -53,8 +51,8 @@ The chart illustrates the growth of the U.S. jail population from 1970 to 2018, 
 
 ## Growth of Prison Population by State
 ```{r echo = FALSE, message = FALSE}
-jail_pop_line <- plot_jail_pop_by_states(c("WA", "OR", "CA", "TX"))
-jail_pop_line
+plot_jail_pop_by_states(c("WA", "OR", "CA", "TX"))
+
 ```
 \
 \
@@ -62,12 +60,21 @@ The chart illustrates the growth of the jail population in Washington, Californi
 
 ## Difference in Black Prison Population Rate Between Rural and Urban Areas
 ```{r echo = FALSE, message = FALSE, warning = FALSE}
-prison_pop_line <- plot_prison_pop_by_urbanicity()
-prison_pop_line
+plot_prison_pop_by_urbanicity()
 ```
 \
 \
 The chart illustrates the difference in black prison population rate between rural and urban areas, answering the question of how do rural and urban areas differ in the rate of black prison population. In 1970, there is a clear difference between the rural and urban areas. In rural areas, the rate of black population in prison was 72.94% while it was 33.25% in urban areas. Throughout the year, the rate in rural area levels between 20% and 35%. However, in urban area, it has plummeted from 1982 to 1990, from 80.93% to 33.54%. Nevertheless, the rate in urban areas has always been higher than rural areas over the course of 48 years. In 2018, the rate in urban area was 49.74% while the rate in rural area was 22.02%.
+
+## Difference in U.S. Jail Average Population Rate in 2018 Between Female and Male
+```{r echo = FALSE, message = FALSE, warning = FALSE}
+plot_male_map()
+plot_female_map()
+
+```
+\
+The chart portrays the difference in U.S. average jail population rate in 2018 between female and male, answering the question of how do average jail population rate differ between the two genders. Just by looking at the legend, it is apparent that overall, male has higher population rate than female; the average jail population rate of female is between 0% and 25% while the average jail population rate of male is between 0% and 100%. The highest average jail population rate was in Montana, and Wyoming for male and West Virginia, and Montana for female. The lowest average jail population rate was in Connecticut, Delaware, Hawaii, Rhode Island, and Vermont for both female and male. 
+
 
 ## References
 Criminalization &amp; Racial Disparities. Vera Institute of Justice. (n.d.). Retrieved November 23, 2022, from https://www.vera.org/ending-mass-incarceration/criminalization-racial-disparities 
